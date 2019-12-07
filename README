@@ -1,1 +1,4 @@
-Change your device resolution via Terminal! (For iOS/iPadOS)
+Auto set your generator when jailbreaking!
+Usage: setgenerator [generator]
+If you didn't choose a generator, Generator Auto Setter will set 0x1111111111111111 as default generator.
+Only Support Checkra1n. (Because other jailbreak tool doesn't need that.)

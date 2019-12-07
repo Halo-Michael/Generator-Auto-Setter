@@ -66,6 +66,8 @@ int main(int argc, char **argv)
         char command[32];
         sprintf(command, "dimentio %s", generator);
         run_cmd(command);
+    } else {
+        run_cmd("dimentio 0x1111111111111111");
     }
     
     return 0;

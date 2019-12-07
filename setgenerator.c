@@ -57,11 +57,13 @@ int main(int argc, char **argv)
     
     if (access("/var/mobile/Library/Preferences/com.michael.generator.plist", F_OK) == 0) {
         char generator[19];
+        char check[1024];
         FILE *fp = fopen("/var/mobile/Library/Preferences/com.michael.generator.plist","r");
-        for (int i=0; i<5; i++) {
-            fscanf(fp, "%*[^\n]%*c");
+        while (strcmp(check, "<key>generator</key>") != 0)
+        {
+            fscanf(fp, "%*c%[^\n]%*c", check);
         }
-        fscanf(fp, "%*[^0]%[^<]", generator);
+        fscanf(fp, "%*[^0]%[^<]%*[^\n]%*c", generator);
         fclose(fp);
         char command[32];
         sprintf(command, "dimentio %s", generator);

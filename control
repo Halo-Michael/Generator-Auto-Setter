@@ -1,0 +1,14 @@
+Package: com.michael.generatorautosetter
+Version: 0.1.0
+Section: Tweaks
+Name: Generator Auto Setter
+Author: halo_michael <yc992147156@me.com>
+Sponsor: halo_michael <yc992147156@me.com>
+Maintainer: halo_michael <yc992147156@me.com>
+Depends: firmware (>= 12.3), com.michael.dimentio
+Architecture: iphoneos-arm
+Description: Auto set your generator when jailbreaking!
+ Auto set your generator when jailbreaking!
+ Usage: setgenerator [generator]
+ If you didn't choose a generator, Generator Auto Setter will set 0x1111111111111111 as default generator.
+ Only Support Checkra1n. (Because other jailbreak tool doesn't need that.)

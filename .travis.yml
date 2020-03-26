@@ -1,0 +1,15 @@
+# https://travis-ci.org
+
+sudo: required
+language: objective-c
+os: osx
+osx_image: xcode11.3
+
+before_install:
+  - brew update
+  - brew install ldid dpkg xz
+  - export THEOS=/opt/theos
+  - sudo git clone --recursive https://github.com/theos/theos.git $THEOS
+
+script:
+  - make all

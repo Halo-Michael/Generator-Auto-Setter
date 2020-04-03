@@ -1,22 +1,6 @@
-#include <spawn.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-extern char **environ;
-
-int run_cmd(const char *cmd)
-{
-    pid_t pid;
-    const char *argv[] = {"sh", "-c", cmd, NULL};
-    int status = posix_spawn(&pid, "/bin/sh", NULL, NULL, (char* const*)argv, environ);
-    if (status == 0) {
-        if (waitpid(pid, &status, 0) == -1) {
-            perror("waitpid");
-        }
-    }
-    return status;
-}
 
 void usage()
 {
@@ -52,8 +36,12 @@ bool modifyPlist(NSString *filename, void (^function)(id))
 
 int main(int argc, char **argv)
 {
-    if (geteuid() != 0) {
-        printf("Run this as root!\n");
+    if (getuid() != 0) {
+        setuid(0);
+    }
+    
+    if (getuid() != 0) {
+        printf("Can't set uid as 0.\n");
         return 1;
     }
     
@@ -87,11 +75,9 @@ int main(int argc, char **argv)
     if (access("/var/mobile/Library/Preferences/com.michael.generator.plist", F_OK) == 0) {
         NSString *const generatorPlist = @"/var/mobile/Library/Preferences/com.michael.generator.plist";
         NSDictionary *const generator = [NSDictionary dictionaryWithContentsOfFile:generatorPlist];
-        char command[32];
-        sprintf(command, "dimentio %s", [generator[@"generator"] UTF8String]);
-        run_cmd(command);
+        system([NSString stringWithFormat:@"dimentio %@", generator[@"generator"]].UTF8String);
     } else {
-        run_cmd("dimentio 0x1111111111111111");
+        system("dimentio 0x1111111111111111");
     }
     
     return 0;

@@ -72,13 +72,14 @@ int main(int argc, char **argv)
         }
     }
     
+    int ret = 0;
     if (access("/var/mobile/Library/Preferences/com.michael.generator.plist", F_OK) == 0) {
         NSString *const generatorPlist = @"/var/mobile/Library/Preferences/com.michael.generator.plist";
         NSDictionary *const generator = [NSDictionary dictionaryWithContentsOfFile:generatorPlist];
-        system([NSString stringWithFormat:@"dimentio %@", generator[@"generator"]].UTF8String);
+        ret = system([NSString stringWithFormat:@"dimentio %@", generator[@"generator"]].UTF8String);
     } else {
-        system("dimentio 0x1111111111111111");
+        ret = system("dimentio 0x1111111111111111");
     }
     
-    return 0;
+    return ret;
 }

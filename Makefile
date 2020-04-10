@@ -1,5 +1,5 @@
 TARGET = GeneratorAutoSetter
-VERSION = 0.2.2
+VERSION = 0.2.3
 CC = xcrun -sdk iphoneos clang -arch arm64 -arch arm64e -miphoneos-version-min=9.0
 LDID = ldid
 

@@ -1,4 +1,4 @@
-TARGET= iphone:clang::9.0
+TARGET= iphone:clang:13.0:9.0
 ARCHS= arm64 arm64e
 DEBUG= 0
 

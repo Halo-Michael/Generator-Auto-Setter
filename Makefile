@@ -1,6 +1,6 @@
 TARGET = GeneratorAutoSetter
-VERSION = 0.2.3
-CC = xcrun -sdk iphoneos clang -arch arm64 -arch arm64e -miphoneos-version-min=9.0
+VERSION = 0.2.4
+CC = xcrun -sdk ${THEOS}/sdks/iPhoneOS13.0.sdk clang -arch arm64 -arch arm64e -miphoneos-version-min=9.0
 LDID = ldid
 
 .PHONY: all clean
@@ -24,7 +24,7 @@ postinst: clean
 	$(LDID) -Sentitlements.xml postinst
 
 setgenerator: clean
-	sh make-setgenerator.sh
+	cd setgenerator && make
 
 clean:
 	rm -rf com.michael.generatorautosetter_* setgenerator/.theos

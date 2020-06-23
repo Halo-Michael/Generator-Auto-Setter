@@ -78,5 +78,5 @@ int main(int argc, char **argv)
         ret = system("dimentio 0x1111111111111111");
     }
 
-    return ret;
+    return WEXITSTATUS(ret);
 }

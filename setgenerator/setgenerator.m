@@ -80,7 +80,5 @@ int main(int argc, char **argv)
         ret = system([[NSString stringWithFormat:@"dimentio %@", generator] UTF8String]);
     }
 
-    printf("\n                __                                  \n     ________  / /_____  ____  ____  ________       \n    / ___/ _ \\/ __/ __ \\/ __ \\/ __ \\/ ___/ _ \\      \n   (__  )  __/ /_/ / / / /_/ / / / / /__/  __/      \n  /____/\\___/\\__/_/ /_/\\____/_/ /_/\\___/\\___/       \n");
-
     return WEXITSTATUS(ret);
 }

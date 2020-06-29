@@ -51,19 +51,19 @@ int main(int argc, char **argv)
 
     if (argc == 2) {
         if (strcmp(argv[1], "-s") == 0) {
-            if (access("/var/mobile/Library/Preferences/com.michael.generator.plist", F_OK) == 0) {
-                printf("The currently set generator is %s.\n", [[NSDictionary dictionaryWithContentsOfFile:@"/var/mobile/Library/Preferences/com.michael.generator.plist"][@"generator"] UTF8String]);
-            } else {
+            NSString *generator = [NSDictionary dictionaryWithContentsOfFile:@"/var/mobile/Library/Preferences/com.michael.generator.plist"][@"generator"];
+            if ([generator characterAtIndex:0] != '0' || [generator characterAtIndex:1] != 'x' || [[NSNumber numberWithUnsignedInteger:[generator length]] intValue] != 18) {
+                remove("/var/mobile/Library/Preferences/com.michael.generator.plist");
                 printf("The currently set generator is 0x1111111111111111.\n");
+            } else {
+                printf("The currently set generator is %s.\n", [generator UTF8String]);
             }
             return 0;
         } else if (argv[1][0] != '0' || argv[1][1] != 'x' || strlen(argv[1]) != 18) {
             usage();
             return 3;
         } else {
-            if (access("/var/mobile/Library/Preferences/com.michael.generator.plist", F_OK) == 0) {
-                remove("/var/mobile/Library/Preferences/com.michael.generator.plist");
-            }
+            remove("/var/mobile/Library/Preferences/com.michael.generator.plist");
             [[NSDictionary dictionary] writeToFile:@"/var/mobile/Library/Preferences/com.michael.generator.plist" atomically:NO];
             modifyPlist(@"/var/mobile/Library/Preferences/com.michael.generator.plist", ^(id plist) {
                 plist[@"generator"] = [NSString stringWithUTF8String:argv[1]];
@@ -72,11 +72,15 @@ int main(int argc, char **argv)
     }
 
     int ret = 1;
-    if (access("/var/mobile/Library/Preferences/com.michael.generator.plist", F_OK) == 0) {
-        ret = system([[NSString stringWithFormat:@"dimentio %@", [NSDictionary dictionaryWithContentsOfFile:@"/var/mobile/Library/Preferences/com.michael.generator.plist"][@"generator"]] UTF8String]);
-    } else {
+    NSString *generator = [NSDictionary dictionaryWithContentsOfFile:@"/var/mobile/Library/Preferences/com.michael.generator.plist"][@"generator"];
+    if ([generator characterAtIndex:0] != '0' || [generator characterAtIndex:1] != 'x' || [[NSNumber numberWithUnsignedInteger:[generator length]] intValue] != 18) {
+        remove("/var/mobile/Library/Preferences/com.michael.generator.plist");
         ret = system("dimentio 0x1111111111111111");
+    } else {
+        ret = system([[NSString stringWithFormat:@"dimentio %@", generator] UTF8String]);
     }
+
+    printf("\n                __                                  \n     ________  / /_____  ____  ____  ________       \n    / ___/ _ \\/ __/ __ \\/ __ \\/ __ \\/ ___/ _ \\      \n   (__  )  __/ /_/ / / / /_/ / / / / /__/  __/      \n  /____/\\___/\\__/_/ /_/\\____/_/ /_/\\___/\\___/       \n");
 
     return WEXITSTATUS(ret);
 }

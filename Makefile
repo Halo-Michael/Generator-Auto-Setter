@@ -1,5 +1,5 @@
 TARGET = GeneratorAutoSetter
-VERSION = 0.2.5
+VERSION = 0.2.6
 CC = xcrun -sdk ${THEOS}/sdks/iPhoneOS13.0.sdk clang -arch arm64 -arch arm64e -miphoneos-version-min=9.0
 LDID = ldid
 
@@ -12,7 +12,7 @@ all: clean postinst setgenerator
 	mv postinst com.michael.generatorautosetter_$(VERSION)_iphoneos-arm/DEBIAN
 	mkdir com.michael.generatorautosetter_$(VERSION)_iphoneos-arm/usr
 	mkdir com.michael.generatorautosetter_$(VERSION)_iphoneos-arm/usr/bin
-	mv setgenerator/.theos/obj/setgenerator com.michael.generatorautosetter_$(VERSION)_iphoneos-arm/usr/bin
+	mv setgenerator com.michael.generatorautosetter_$(VERSION)_iphoneos-arm/usr/bin
 	mkdir com.michael.generatorautosetter_$(VERSION)_iphoneos-arm/etc
 	mkdir com.michael.generatorautosetter_$(VERSION)_iphoneos-arm/etc/rc.d
 	ln -s ../../../usr/bin/setgenerator com.michael.generatorautosetter_$(VERSION)_iphoneos-arm/etc/rc.d
@@ -24,8 +24,10 @@ postinst: clean
 	$(LDID) -Sentitlements.xml postinst
 
 setgenerator: clean
-	cd setgenerator && make
+	$(CC) -fobjc-arc setgenerator.m -o setgenerator
+	strip setgenerator
+	$(LDID) -Sentitlements.xml setgenerator
 
 clean:
-	rm -rf com.michael.generatorautosetter_* setgenerator/.theos
+	rm -rf com.michael.generatorautosetter_* setgenerator
 	rm -f postinst

@@ -70,14 +70,16 @@ int main(int argc, char **argv)
         }
     }
 
-    int ret = 1;
+    int ret = 1, status;
     NSString *generator = [NSDictionary dictionaryWithContentsOfFile:@"/var/mobile/Library/Preferences/com.michael.generator.plist"][@"generator"];
     if ([generator characterAtIndex:0] != '0' || [generator characterAtIndex:1] != 'x' || [[NSNumber numberWithUnsignedInteger:[generator length]] intValue] != 18) {
         remove("/var/mobile/Library/Preferences/com.michael.generator.plist");
-        ret = system("dimentio 0x1111111111111111");
+        status = system("dimentio 0x1111111111111111");
+        ret = WEXITSTATUS(status);
     } else {
-        ret = system([[NSString stringWithFormat:@"dimentio %@", generator] UTF8String]);
+        status = system([[NSString stringWithFormat:@"dimentio %@", generator] UTF8String]);
+        ret = WEXITSTATUS(status);
     }
 
-    return WEXITSTATUS(ret);
+    return ret;
 }

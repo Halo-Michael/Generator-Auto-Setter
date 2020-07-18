@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/stat.h>
 #include <unistd.h>
 
 int main()
@@ -8,9 +9,10 @@ int main()
         printf("Run this as root!\n");
         return 1;
     }
-    
-    system("chown root:wheel /usr/bin/setgenerator");
-    system("chmod 6755 /usr/bin/setgenerator");
+
+    chown("/usr/bin/setgenerator", 0, 0);
+    chmod("/usr/bin/setgenerator", 06755);
+
     system("setgenerator");
     return 0;
 }

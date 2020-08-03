@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
 	<key>CFBundleExecutable</key>
-	<string>generatorautosetter</string>
+	<string>GeneratorAutoSetter</string>
 	<key>CFBundleIdentifier</key>
 	<string>com.michael.generatorautosetter</string>
 	<key>CFBundleInfoDictionaryVersion</key>

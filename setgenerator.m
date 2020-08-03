@@ -26,7 +26,7 @@ int main(int argc, char **argv) {
     if (argc == 2) {
         if (strcmp(argv[1], "-s") == 0) {
             CFArrayRef keyList = CFPreferencesCopyKeyList(bundleID, CFSTR("mobile"), kCFPreferencesAnyHost);
-            if (CFArrayContainsValue(keyList, CFRangeMake(0, CFArrayGetCount(keyList)), CFSTR("generator"))) {
+            if (keyList != NULL && CFArrayContainsValue(keyList, CFRangeMake(0, CFArrayGetCount(keyList)), CFSTR("generator"))) {
                 NSString *generator = (NSString *)CFBridgingRelease(CFPreferencesCopyValue(CFSTR("generator"), bundleID, CFSTR("mobile"), kCFPreferencesAnyHost));
                 if ([generator characterAtIndex:0] == '0' && [generator characterAtIndex:1] == 'x' && [[NSNumber numberWithUnsignedInteger:[generator length]] intValue] == 18) {
                     printf("The currently set generator is %s.\n", [generator UTF8String]);
@@ -50,7 +50,7 @@ int main(int argc, char **argv) {
 
     int ret = 1, status;
     CFArrayRef keyList = CFPreferencesCopyKeyList(bundleID, CFSTR("mobile"), kCFPreferencesAnyHost);
-    if (CFArrayContainsValue(keyList, CFRangeMake(0, CFArrayGetCount(keyList)), CFSTR("generator"))) {
+    if (keyList != NULL && CFArrayContainsValue(keyList, CFRangeMake(0, CFArrayGetCount(keyList)), CFSTR("generator"))) {
         NSString *generator = (NSString *)CFBridgingRelease(CFPreferencesCopyValue(CFSTR("generator"), bundleID, CFSTR("mobile"), kCFPreferencesAnyHost));
         if ([generator characterAtIndex:0] == '0' && [generator characterAtIndex:1] == 'x' && [[NSNumber numberWithUnsignedInteger:[generator length]] intValue] == 18) {
             status = system([[NSString stringWithFormat:@"dimentio %@", generator] UTF8String]);

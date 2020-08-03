@@ -47,7 +47,7 @@ UIAlertController *alert(NSString *alertTitle, NSString *alertMessage, NSString 
         [alertMessage appendFormat:@"%c", buffer];
         buffer = fgetc(fp);
     }
-    fclose(fp);
+    pclose(fp);
     [self presentViewController:alert(@"setgenerator", alertMessage, @"OK") animated:YES completion:nil];
 }
 

@@ -37,6 +37,8 @@
 			<string>PSEditTextCell</string>
 			<key>defaults</key>
 			<string>com.michael.generator</string>
+			<key>default</key>
+			<string>0x1111111111111111</string>
 			<key>label</key>
 			<string>Generator</string>
 			<key>key</key>

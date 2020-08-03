@@ -30,7 +30,7 @@ UIAlertController *alert(NSString *alertTitle, NSString *alertMessage, NSString 
 
 - (void)setPreferenceValue:(id)value specifier:(PSSpecifier*)specifier {
     if ([[specifier propertyForKey:@"key"] isEqualToString:@"generator"]) {
-        if (value == nil || [value characterAtIndex:0] != '0' || [value characterAtIndex:1] != 'x' || [[NSNumber numberWithUnsignedInteger:[value length]] intValue] != 18) {
+        if ([value characterAtIndex:0] != '0' || [value characterAtIndex:1] != 'x' || [[NSNumber numberWithUnsignedInteger:[value length]] intValue] != 18) {
             [self presentViewController:alert(@"setgenerator", [NSString stringWithFormat:@"Wrong generator \"%@\":\nFormat error!", value], @"OK") animated:YES completion:nil];
             return;
         }

@@ -42,7 +42,7 @@ int main(int argc, char **argv) {
             usage();
             return 3;
         } else {
-            removefile("/var/mobile/Library/Preferences/com.michael.generator.plist", NULL, REMOVEFILE_RECURSIVE);
+            removefile("/private/var/mobile/Library/Preferences/com.michael.generator.plist", NULL, REMOVEFILE_RECURSIVE);
             CFPreferencesSynchronize(bundleID, CFSTR("mobile"), kCFPreferencesAnyHost);
             CFPreferencesSetValue(CFSTR("generator"), CFStringCreateWithCString(kCFAllocatorDefault, argv[1], kCFStringEncodingUTF8), bundleID, CFSTR("mobile"), kCFPreferencesAnyHost);
         }

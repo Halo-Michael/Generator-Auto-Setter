@@ -1,11 +1,13 @@
-TARGET = GeneratorAutoSetter
-VERSION = 0.2.7
+export TARGET = iphone:clang:13.0:9.0
+export ARCHS = arm64 arm64e
+export VERSION = 0.3.0
+export DEBUG = no
 CC = xcrun -sdk ${THEOS}/sdks/iPhoneOS13.0.sdk clang -arch arm64 -arch arm64e -miphoneos-version-min=9.0
 LDID = ldid
 
 .PHONY: all clean
 
-all: clean postinst setgenerator
+all: clean rcsetgenerator postinst setgenerator preferenceloaderBundle
 	mkdir com.michael.generatorautosetter_$(VERSION)_iphoneos-arm
 	mkdir com.michael.generatorautosetter_$(VERSION)_iphoneos-arm/DEBIAN
 	cp control com.michael.generatorautosetter_$(VERSION)_iphoneos-arm/DEBIAN
@@ -15,7 +17,13 @@ all: clean postinst setgenerator
 	mv setgenerator com.michael.generatorautosetter_$(VERSION)_iphoneos-arm/usr/bin
 	mkdir com.michael.generatorautosetter_$(VERSION)_iphoneos-arm/etc
 	mkdir com.michael.generatorautosetter_$(VERSION)_iphoneos-arm/etc/rc.d
-	ln -s ../../../usr/bin/setgenerator com.michael.generatorautosetter_$(VERSION)_iphoneos-arm/etc/rc.d
+	mv rcsetgenerator com.michael.generatorautosetter_$(VERSION)_iphoneos-arm/etc/rc.d/setgenerator
+	mkdir com.michael.generatorautosetter_$(VERSION)_iphoneos-arm/Library
+	mkdir com.michael.generatorautosetter_$(VERSION)_iphoneos-arm/Library/PreferenceLoader
+	mkdir com.michael.generatorautosetter_$(VERSION)_iphoneos-arm/Library/PreferenceLoader/Preferences
+	cp preferenceloaderBundle/entry.plist com.michael.generatorautosetter_$(VERSION)_iphoneos-arm/Library/PreferenceLoader/Preferences/GeneratorAutoSetter.plist
+	mkdir com.michael.generatorautosetter_$(VERSION)_iphoneos-arm/Library/PreferenceBundles
+	mv preferenceloaderBundle/.theos/obj/GeneratorAutoSetter.bundle com.michael.generatorautosetter_$(VERSION)_iphoneos-arm/Library/PreferenceBundles
 	dpkg -b com.michael.generatorautosetter_$(VERSION)_iphoneos-arm
 
 postinst: clean
@@ -23,11 +31,19 @@ postinst: clean
 	strip postinst
 	$(LDID) -Sentitlements.xml postinst
 
+rcsetgenerator: clean
+	$(CC) -fobjc-arc rcsetgenerator.m -o rcsetgenerator
+	strip rcsetgenerator
+	$(LDID) -Sentitlements.xml rcsetgenerator
+
 setgenerator: clean
 	$(CC) -fobjc-arc setgenerator.m -o setgenerator
 	strip setgenerator
 	$(LDID) -Sentitlements.xml setgenerator
 
+preferenceloaderBundle: clean
+	cd preferenceloaderBundle && make
+
 clean:
-	rm -rf com.michael.generatorautosetter_* setgenerator
-	rm -f postinst
+	rm -rf com.michael.generatorautosetter_* preferenceloaderBundle/.theos
+	rm -f postinst rcsetgenerator setgenerator

@@ -1,39 +1,14 @@
 #include <Foundation/Foundation.h>
+#include <removefile.h>
 
-void usage()
-{
+CFStringRef bundleID = CFSTR("com.michael.generator");
+
+void usage() {
     printf("Usage:\tsetgenerator [generator]\n");
     printf("\t-s\tShow current setting.\n");
 }
 
-bool modifyPlist(NSString *filename, void (^function)(id))
-{
-    NSData *data = [NSData dataWithContentsOfFile:filename];
-    if (data == nil) {
-        return false;
-    }
-    NSPropertyListFormat format = 0;
-    id plist = [NSPropertyListSerialization propertyListWithData:data options:NSPropertyListMutableContainersAndLeaves format:&format error:nil];
-    if (plist == nil) {
-        return false;
-    }
-    if (function) {
-        function(plist);
-    }
-    NSData *newData = [NSPropertyListSerialization dataWithPropertyList:plist format:format options:0 error:nil];
-    if (newData == nil) {
-        return false;
-    }
-    if (![data isEqual:newData]) {
-        if (![newData writeToFile:filename atomically:YES]) {
-            return false;
-        }
-    }
-    return true;
-}
-
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     if (getuid() != 0) {
         setuid(0);
     }
@@ -50,36 +25,43 @@ int main(int argc, char **argv)
 
     if (argc == 2) {
         if (strcmp(argv[1], "-s") == 0) {
-            NSString *generator = [NSDictionary dictionaryWithContentsOfFile:@"/var/mobile/Library/Preferences/com.michael.generator.plist"][@"generator"];
-            if ([generator characterAtIndex:0] != '0' || [generator characterAtIndex:1] != 'x' || [[NSNumber numberWithUnsignedInteger:[generator length]] intValue] != 18) {
-                remove("/var/mobile/Library/Preferences/com.michael.generator.plist");
-                printf("The currently set generator is 0x1111111111111111.\n");
-            } else {
-                printf("The currently set generator is %s.\n", [generator UTF8String]);
+            CFArrayRef keyList = CFPreferencesCopyKeyList(bundleID, CFSTR("mobile"), kCFPreferencesAnyHost);
+            if (CFArrayContainsValue(keyList, CFRangeMake(0, CFArrayGetCount(keyList)), CFSTR("generator"))) {
+                NSString *generator = (NSString *)CFBridgingRelease(CFPreferencesCopyValue(CFSTR("generator"), bundleID, CFSTR("mobile"), kCFPreferencesAnyHost));
+                if ([generator characterAtIndex:0] == '0' && [generator characterAtIndex:1] == 'x' && [[NSNumber numberWithUnsignedInteger:[generator length]] intValue] == 18) {
+                    printf("The currently set generator is %s.\n", [generator UTF8String]);
+                    return 0;
+                } else {
+                    removefile("/private/var/mobile/Library/Preferences/com.michael.generator.plist", NULL, REMOVEFILE_RECURSIVE);
+                    CFPreferencesSynchronize(bundleID, CFSTR("mobile"), kCFPreferencesAnyHost);
+                }
             }
+            printf("The currently set generator is 0x1111111111111111.\n");
             return 0;
         } else if (argv[1][0] != '0' || argv[1][1] != 'x' || strlen(argv[1]) != 18) {
             usage();
             return 3;
         } else {
-            remove("/var/mobile/Library/Preferences/com.michael.generator.plist");
-            [[NSDictionary dictionary] writeToFile:@"/var/mobile/Library/Preferences/com.michael.generator.plist" atomically:NO];
-            modifyPlist(@"/var/mobile/Library/Preferences/com.michael.generator.plist", ^(id plist) {
-                plist[@"generator"] = [NSString stringWithUTF8String:argv[1]];
-            });
+            removefile("/var/mobile/Library/Preferences/com.michael.generator.plist", NULL, REMOVEFILE_RECURSIVE);
+            CFPreferencesSynchronize(bundleID, CFSTR("mobile"), kCFPreferencesAnyHost);
+            CFPreferencesSetValue(CFSTR("generator"), CFStringCreateWithCString(kCFAllocatorDefault, argv[1], kCFStringEncodingUTF8), bundleID, CFSTR("mobile"), kCFPreferencesAnyHost);
         }
     }
 
     int ret = 1, status;
-    NSString *generator = [NSDictionary dictionaryWithContentsOfFile:@"/var/mobile/Library/Preferences/com.michael.generator.plist"][@"generator"];
-    if ([generator characterAtIndex:0] != '0' || [generator characterAtIndex:1] != 'x' || [[NSNumber numberWithUnsignedInteger:[generator length]] intValue] != 18) {
-        remove("/var/mobile/Library/Preferences/com.michael.generator.plist");
-        status = system("dimentio 0x1111111111111111");
-        ret = WEXITSTATUS(status);
-    } else {
-        status = system([[NSString stringWithFormat:@"dimentio %@", generator] UTF8String]);
-        ret = WEXITSTATUS(status);
+    CFArrayRef keyList = CFPreferencesCopyKeyList(bundleID, CFSTR("mobile"), kCFPreferencesAnyHost);
+    if (CFArrayContainsValue(keyList, CFRangeMake(0, CFArrayGetCount(keyList)), CFSTR("generator"))) {
+        NSString *generator = (NSString *)CFBridgingRelease(CFPreferencesCopyValue(CFSTR("generator"), bundleID, CFSTR("mobile"), kCFPreferencesAnyHost));
+        if ([generator characterAtIndex:0] == '0' && [generator characterAtIndex:1] == 'x' && [[NSNumber numberWithUnsignedInteger:[generator length]] intValue] == 18) {
+            status = system([[NSString stringWithFormat:@"dimentio %@", generator] UTF8String]);
+            ret = WEXITSTATUS(status);
+            return ret;
+        } else {
+            removefile("/private/var/mobile/Library/Preferences/com.michael.generator.plist", NULL, REMOVEFILE_RECURSIVE);
+            CFPreferencesSynchronize(bundleID, CFSTR("mobile"), kCFPreferencesAnyHost);
+        }
     }
-
+    status = system("dimentio 0x1111111111111111");
+    ret = WEXITSTATUS(status);
     return ret;
 }

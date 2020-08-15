@@ -23,7 +23,6 @@ char *CFStringCopyUTF8String(CFStringRef aString) {
     return NULL;
 }
 
-
 int main(int argc, char **argv) {
     if (getuid() != 0) {
         setuid(0);

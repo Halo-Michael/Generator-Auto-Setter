@@ -2,14 +2,8 @@
 #import <Preferences/PSSpecifier.h>
 
 UIAlertController *alert(NSString *alertTitle, NSString *alertMessage, NSString *actionTitle) {
-    UIAlertController *theAlert = [UIAlertController
-                                alertControllerWithTitle:alertTitle
-                                message:alertMessage
-                                preferredStyle:UIAlertControllerStyleAlert];
-    UIAlertAction *defaultAction = [UIAlertAction
-                                    actionWithTitle:actionTitle
-                                    style:UIAlertActionStyleDefault
-                                    handler:^(UIAlertAction * action) {}];
+    UIAlertController *theAlert = [UIAlertController alertControllerWithTitle:alertTitle message:alertMessage preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertAction *defaultAction = [UIAlertAction actionWithTitle:actionTitle style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {}];
     [theAlert addAction:defaultAction];
     return theAlert;
 }
@@ -30,7 +24,7 @@ UIAlertController *alert(NSString *alertTitle, NSString *alertMessage, NSString 
 
 - (void)setPreferenceValue:(id)value specifier:(PSSpecifier*)specifier {
     if ([[specifier propertyForKey:@"key"] isEqualToString:@"generator"]) {
-        if ([value characterAtIndex:0] != '0' || [value characterAtIndex:1] != 'x' || [[NSNumber numberWithUnsignedInteger:[value length]] intValue] != 18) {
+        if ([[NSNumber numberWithUnsignedInteger:[value length]] intValue] != 18 || [value characterAtIndex:0] != '0' || [value characterAtIndex:1] != 'x') {
             [self presentViewController:alert(@"setgenerator", [NSString stringWithFormat:@"Wrong generator \"%@\":\nFormat error!", value], @"OK") animated:YES completion:nil];
             return;
         }

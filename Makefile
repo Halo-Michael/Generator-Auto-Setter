@@ -1,8 +1,8 @@
-export TARGET = iphone:clang:13.0:9.0
+export TARGET = iphone:clang::9.0
 export ARCHS = arm64 arm64e
-export VERSION = 0.3.2
+export VERSION = 0.3.3
 export DEBUG = no
-CC = xcrun -sdk ${THEOS}/sdks/iPhoneOS13.0.sdk clang -arch arm64 -arch arm64e -miphoneos-version-min=9.0
+CC = xcrun -sdk iphoneos clang -arch arm64 -arch arm64e -miphoneos-version-min=9.0
 LDID = ldid
 
 .PHONY: all clean
@@ -32,12 +32,12 @@ postinst: clean
 	$(LDID) -Sentitlements.xml postinst
 
 rcsetgenerator: clean
-	$(CC) -fobjc-arc rcsetgenerator.m -o rcsetgenerator
+	$(CC) rcsetgenerator.c -framework CoreFoundation -o rcsetgenerator
 	strip rcsetgenerator
 	$(LDID) -Sentitlements.xml rcsetgenerator
 
 setgenerator: clean
-	$(CC) -fobjc-arc setgenerator.m -o setgenerator
+	$(CC) setgenerator.c -framework CoreFoundation -o setgenerator
 	strip setgenerator
 	$(LDID) -Sentitlements.xml setgenerator
 

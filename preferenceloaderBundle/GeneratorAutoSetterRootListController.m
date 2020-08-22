@@ -18,7 +18,6 @@ UIAlertController *alert(NSString *alertTitle, NSString *alertMessage, NSString 
 	if (!_specifiers) {
 		_specifiers = [self loadSpecifiersFromPlistName:@"Root" target:self];
 	}
-
 	return _specifiers;
 }
 

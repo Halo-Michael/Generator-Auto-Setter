@@ -1,5 +1,4 @@
 #include <CoreFoundation/CoreFoundation.h>
-#include <removefile.h>
 
 CFStringRef bundleID = CFSTR("com.michael.generator");
 
@@ -47,18 +46,16 @@ int main(int argc, char **argv) {
                     printf("The currently set generator is %s.\n", generator);
                     return 0;
                 } else {
-                    removefile("/private/var/mobile/Library/Preferences/com.michael.generator.plist", NULL, REMOVEFILE_RECURSIVE);
-                    CFPreferencesSynchronize(bundleID, CFSTR("mobile"), kCFPreferencesAnyHost);
+                    CFPreferencesSetValue(CFSTR("generator"), NULL, bundleID, CFSTR("mobile"), kCFPreferencesAnyHost);
                 }
             }
+            CFRelease(keyList);
             printf("The currently set generator is 0x1111111111111111.\n");
             return 0;
         } else if (strlen(argv[1]) != 18 || argv[1][0] != '0' || argv[1][1] != 'x') {
             usage();
             return 3;
         } else {
-            removefile("/private/var/mobile/Library/Preferences/com.michael.generator.plist", NULL, REMOVEFILE_RECURSIVE);
-            CFPreferencesSynchronize(bundleID, CFSTR("mobile"), kCFPreferencesAnyHost);
             CFPreferencesSetValue(CFSTR("generator"), CFStringCreateWithCString(kCFAllocatorDefault, argv[1], kCFStringEncodingUTF8), bundleID, CFSTR("mobile"), kCFPreferencesAnyHost);
         }
     }
@@ -68,11 +65,11 @@ int main(int argc, char **argv) {
     if (keyList != NULL && CFArrayContainsValue(keyList, CFRangeMake(0, CFArrayGetCount(keyList)), CFSTR("generator"))) {
         generator = CFStringCopyUTF8String(CFPreferencesCopyValue(CFSTR("generator"), bundleID, CFSTR("mobile"), kCFPreferencesAnyHost));
         if (strlen(generator) != 18 || generator[0] != '0' || generator[1] != 'x') {
-            removefile("/private/var/mobile/Library/Preferences/com.michael.generator.plist", NULL, REMOVEFILE_RECURSIVE);
-            CFPreferencesSynchronize(bundleID, CFSTR("mobile"), kCFPreferencesAnyHost);
+            CFPreferencesSetValue(CFSTR("generator"), NULL, bundleID, CFSTR("mobile"), kCFPreferencesAnyHost);
             generator = "0x1111111111111111";
         }
     }
+    CFRelease(keyList);
     execvp("dimentio", (char *[]){"dimentio", generator, NULL});
     perror("dimentio");
     return -1;

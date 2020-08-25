@@ -45,6 +45,7 @@ int main(int argc, char **argv) {
                     char *generator = CFStringCopyUTF8String(CFPreferencesCopyValue(CFSTR("generator"), bundleID, CFSTR("mobile"), kCFPreferencesAnyHost));
                     if (strlen(generator) == 18 && generator[0] == '0' && generator[1] == 'x') {
                         printf("The currently set generator is %s.\n", generator);
+                        CFRelease(keyList);
                         return 0;
                     } else {
                         CFPreferencesSetValue(CFSTR("generator"), NULL, bundleID, CFSTR("mobile"), kCFPreferencesAnyHost);

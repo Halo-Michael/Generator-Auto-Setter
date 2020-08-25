@@ -40,16 +40,18 @@ int main(int argc, char **argv) {
     if (argc == 2) {
         if (strcmp(argv[1], "-s") == 0) {
             CFArrayRef keyList = CFPreferencesCopyKeyList(bundleID, CFSTR("mobile"), kCFPreferencesAnyHost);
-            if (keyList != NULL && CFArrayContainsValue(keyList, CFRangeMake(0, CFArrayGetCount(keyList)), CFSTR("generator"))) {
-                char *generator = CFStringCopyUTF8String(CFPreferencesCopyValue(CFSTR("generator"), bundleID, CFSTR("mobile"), kCFPreferencesAnyHost));
-                if (strlen(generator) == 18 && generator[0] == '0' && generator[1] == 'x') {
-                    printf("The currently set generator is %s.\n", generator);
-                    return 0;
-                } else {
-                    CFPreferencesSetValue(CFSTR("generator"), NULL, bundleID, CFSTR("mobile"), kCFPreferencesAnyHost);
+            if (keyList != NULL) {
+                if (CFArrayContainsValue(keyList, CFRangeMake(0, CFArrayGetCount(keyList)), CFSTR("generator"))) {
+                    char *generator = CFStringCopyUTF8String(CFPreferencesCopyValue(CFSTR("generator"), bundleID, CFSTR("mobile"), kCFPreferencesAnyHost));
+                    if (strlen(generator) == 18 && generator[0] == '0' && generator[1] == 'x') {
+                        printf("The currently set generator is %s.\n", generator);
+                        return 0;
+                    } else {
+                        CFPreferencesSetValue(CFSTR("generator"), NULL, bundleID, CFSTR("mobile"), kCFPreferencesAnyHost);
+                    }
                 }
+                CFRelease(keyList);
             }
-            CFRelease(keyList);
             printf("The currently set generator is 0x1111111111111111.\n");
             return 0;
         } else if (strlen(argv[1]) != 18 || argv[1][0] != '0' || argv[1][1] != 'x') {
@@ -62,14 +64,16 @@ int main(int argc, char **argv) {
 
     char *generator = "0x1111111111111111";
     CFArrayRef keyList = CFPreferencesCopyKeyList(bundleID, CFSTR("mobile"), kCFPreferencesAnyHost);
-    if (keyList != NULL && CFArrayContainsValue(keyList, CFRangeMake(0, CFArrayGetCount(keyList)), CFSTR("generator"))) {
-        generator = CFStringCopyUTF8String(CFPreferencesCopyValue(CFSTR("generator"), bundleID, CFSTR("mobile"), kCFPreferencesAnyHost));
-        if (strlen(generator) != 18 || generator[0] != '0' || generator[1] != 'x') {
-            CFPreferencesSetValue(CFSTR("generator"), NULL, bundleID, CFSTR("mobile"), kCFPreferencesAnyHost);
-            generator = "0x1111111111111111";
+    if (keyList != NULL) {
+        if (CFArrayContainsValue(keyList, CFRangeMake(0, CFArrayGetCount(keyList)), CFSTR("generator"))) {
+            generator = CFStringCopyUTF8String(CFPreferencesCopyValue(CFSTR("generator"), bundleID, CFSTR("mobile"), kCFPreferencesAnyHost));
+            if (strlen(generator) != 18 || generator[0] != '0' || generator[1] != 'x') {
+                CFPreferencesSetValue(CFSTR("generator"), NULL, bundleID, CFSTR("mobile"), kCFPreferencesAnyHost);
+                generator = "0x1111111111111111";
+            }
         }
+        CFRelease(keyList);
     }
-    CFRelease(keyList);
     execvp("dimentio", (char *[]){"dimentio", generator, NULL});
     perror("dimentio");
     return -1;

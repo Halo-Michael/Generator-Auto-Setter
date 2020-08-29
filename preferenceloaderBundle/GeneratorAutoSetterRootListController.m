@@ -8,6 +8,18 @@ UIAlertController *alert(NSString *alertTitle, NSString *alertMessage, NSString 
     return theAlert;
 }
 
+bool vaildGenerator(NSString *generator) {
+    if ([generator length] != 18 || [generator characterAtIndex:0] != '0' || [generator characterAtIndex:1] != 'x') {
+        return false;
+    }
+    for (int i = 2; i <= 17; i++) {
+        if (!isxdigit([generator characterAtIndex:i])) {
+            return false;
+        }
+    }
+    return true;
+}
+
 @interface GeneratorAutoSetterRootListController : PSListController
 
 @end
@@ -23,7 +35,7 @@ UIAlertController *alert(NSString *alertTitle, NSString *alertMessage, NSString 
 
 - (void)setPreferenceValue:(id)value specifier:(PSSpecifier*)specifier {
     if ([[specifier propertyForKey:@"key"] isEqualToString:@"generator"]) {
-        if ([[NSNumber numberWithUnsignedInteger:[value length]] intValue] != 18 || [value characterAtIndex:0] != '0' || [value characterAtIndex:1] != 'x') {
+        if (!vaildGenerator(value)) {
             [self presentViewController:alert(@"setgenerator", [NSString stringWithFormat:@"Wrong generator \"%@\":\nFormat error!", value], @"OK") animated:YES completion:nil];
             return;
         }

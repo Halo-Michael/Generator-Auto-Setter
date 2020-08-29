@@ -7,19 +7,38 @@ void usage() {
     printf("\t-s\tShow current setting.\n");
 }
 
-char *CFStringCopyUTF8String(CFStringRef aString) {
-    if (aString == NULL) {
-        return NULL;
+bool vaildGenerator(char *generator) {
+    if (strlen(generator) != 18 || generator[0] != '0' || generator[1] != 'x') {
+        return false;
     }
+    for (int i = 2; i <= 17; i++) {
+        if (!isxdigit(generator[i])) {
+            return false;
+        }
+    }
+    return true;
+}
 
-    CFIndex length = CFStringGetLength(aString);
-    CFIndex maxSize = CFStringGetMaximumSizeForEncoding(length, kCFStringEncodingUTF8) + 1;
-    char *buffer = (char *)malloc(maxSize);
-    if (CFStringGetCString(aString, buffer, maxSize, kCFStringEncodingUTF8)) {
-        return buffer;
+char *getGenerator() {
+    char *generator = "0x1111111111111111";
+    CFArrayRef keyList = CFPreferencesCopyKeyList(bundleID, CFSTR("mobile"), kCFPreferencesAnyHost);
+    if (keyList != NULL) {
+        if (CFArrayContainsValue(keyList, CFRangeMake(0, CFArrayGetCount(keyList)), CFSTR("generator"))) {          
+            CFStringRef CFGenerator = CFPreferencesCopyValue(CFSTR("generator"), bundleID, CFSTR("mobile"), kCFPreferencesAnyHost);
+            CFIndex maxSize = CFStringGetMaximumSizeForEncoding(CFStringGetLength(CFGenerator), kCFStringEncodingUTF8) + 1;
+            generator = (char *)malloc(maxSize);
+            memset(generator, 0, maxSize);
+            CFStringGetCString(CFGenerator, generator, maxSize, kCFStringEncodingUTF8);
+            CFRelease(CFGenerator);
+            if (!vaildGenerator(generator)) {
+                free(generator);
+                generator = "0x1111111111111111";
+                CFPreferencesSetValue(CFSTR("generator"), NULL, bundleID, CFSTR("mobile"), kCFPreferencesAnyHost);
+            }
+        }
+        CFRelease(keyList);
     }
-    free(buffer);
-    return NULL;
+    return generator;
 }
 
 int main(int argc, char **argv) {
@@ -39,23 +58,9 @@ int main(int argc, char **argv) {
 
     if (argc == 2) {
         if (strcmp(argv[1], "-s") == 0) {
-            CFArrayRef keyList = CFPreferencesCopyKeyList(bundleID, CFSTR("mobile"), kCFPreferencesAnyHost);
-            if (keyList != NULL) {
-                if (CFArrayContainsValue(keyList, CFRangeMake(0, CFArrayGetCount(keyList)), CFSTR("generator"))) {
-                    char *generator = CFStringCopyUTF8String(CFPreferencesCopyValue(CFSTR("generator"), bundleID, CFSTR("mobile"), kCFPreferencesAnyHost));
-                    if (strlen(generator) == 18 && generator[0] == '0' && generator[1] == 'x') {
-                        printf("The currently set generator is %s.\n", generator);
-                        CFRelease(keyList);
-                        return 0;
-                    } else {
-                        CFPreferencesSetValue(CFSTR("generator"), NULL, bundleID, CFSTR("mobile"), kCFPreferencesAnyHost);
-                    }
-                }
-                CFRelease(keyList);
-            }
-            printf("The currently set generator is 0x1111111111111111.\n");
+            printf("The currently set generator is %s.\n", getGenerator());
             return 0;
-        } else if (strlen(argv[1]) != 18 || argv[1][0] != '0' || argv[1][1] != 'x') {
+        } else if (!vaildGenerator(argv[1])) {
             usage();
             return 3;
         } else {
@@ -63,19 +68,7 @@ int main(int argc, char **argv) {
         }
     }
 
-    char *generator = "0x1111111111111111";
-    CFArrayRef keyList = CFPreferencesCopyKeyList(bundleID, CFSTR("mobile"), kCFPreferencesAnyHost);
-    if (keyList != NULL) {
-        if (CFArrayContainsValue(keyList, CFRangeMake(0, CFArrayGetCount(keyList)), CFSTR("generator"))) {
-            generator = CFStringCopyUTF8String(CFPreferencesCopyValue(CFSTR("generator"), bundleID, CFSTR("mobile"), kCFPreferencesAnyHost));
-            if (strlen(generator) != 18 || generator[0] != '0' || generator[1] != 'x') {
-                CFPreferencesSetValue(CFSTR("generator"), NULL, bundleID, CFSTR("mobile"), kCFPreferencesAnyHost);
-                generator = "0x1111111111111111";
-            }
-        }
-        CFRelease(keyList);
-    }
-    execvp("dimentio", (char *[]){"dimentio", generator, NULL});
+    execvp("dimentio", (char *[]){"dimentio", getGenerator(), NULL});
     perror("dimentio");
     return -1;
 }

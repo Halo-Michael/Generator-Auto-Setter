@@ -1,6 +1,6 @@
 #include <CoreFoundation/CoreFoundation.h>
 
-CFStringRef bundleID = CFSTR("com.michael.generator");
+#define bundleID CFSTR("com.michael.generator")
 
 void usage() {
     printf("Usage:\tsetgenerator [generator]\n");

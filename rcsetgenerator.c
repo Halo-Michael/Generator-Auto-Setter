@@ -1,6 +1,6 @@
 #include <CoreFoundation/CoreFoundation.h>
 
-CFStringRef bundleID = CFSTR("com.michael.generator");
+#define bundleID CFSTR("com.michael.generator")
 
 int main() {
     CFArrayRef keyList = CFPreferencesCopyKeyList(bundleID, CFSTR("mobile"), kCFPreferencesAnyHost);

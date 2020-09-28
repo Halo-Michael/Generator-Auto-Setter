@@ -20,7 +20,7 @@ bool vaildGenerator(char *generator) {
 }
 
 char *getGenerator() {
-    char generator[19] = {0};
+    static char generator[19] = {0};
     CFArrayRef keyList = CFPreferencesCopyKeyList(bundleID, CFSTR("mobile"), kCFPreferencesAnyHost);
     if (keyList != NULL) {
         if (CFArrayContainsValue(keyList, CFRangeMake(0, CFArrayGetCount(keyList)), CFSTR("generator"))) {

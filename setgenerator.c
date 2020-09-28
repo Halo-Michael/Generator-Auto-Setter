@@ -20,25 +20,23 @@ bool vaildGenerator(char *generator) {
 }
 
 char *getGenerator() {
-    char *generator = "0x1111111111111111";
+    char generator[19] = {0};
     CFArrayRef keyList = CFPreferencesCopyKeyList(bundleID, CFSTR("mobile"), kCFPreferencesAnyHost);
     if (keyList != NULL) {
-        if (CFArrayContainsValue(keyList, CFRangeMake(0, CFArrayGetCount(keyList)), CFSTR("generator"))) {          
+        if (CFArrayContainsValue(keyList, CFRangeMake(0, CFArrayGetCount(keyList)), CFSTR("generator"))) {
             CFStringRef CFGenerator = CFPreferencesCopyValue(CFSTR("generator"), bundleID, CFSTR("mobile"), kCFPreferencesAnyHost);
-            CFIndex maxSize = CFStringGetMaximumSizeForEncoding(CFStringGetLength(CFGenerator), kCFStringEncodingUTF8) + 1;
-            generator = (char *)malloc(maxSize);
-            memset(generator, 0, maxSize);
-            CFStringGetCString(CFGenerator, generator, maxSize, kCFStringEncodingUTF8);
-            CFRelease(CFGenerator);
-            if (!vaildGenerator(generator)) {
-                free(generator);
-                generator = "0x1111111111111111";
-                CFPreferencesSetValue(CFSTR("generator"), NULL, bundleID, CFSTR("mobile"), kCFPreferencesAnyHost);
+            if (CFStringGetLength(CFGenerator) == 18) {
+                CFStringGetCString(CFGenerator, generator, 19, kCFStringEncodingUTF8);
             }
+            CFRelease(CFGenerator);
         }
         CFRelease(keyList);
     }
-    return generator;
+    if (generator[0] == '\0' || !vaildGenerator(generator)) {
+        strcpy(generator, "0x1111111111111111");
+    }
+    char *pointer = generator;
+    return pointer;
 }
 
 int main(int argc, char **argv) {

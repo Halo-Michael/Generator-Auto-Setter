@@ -27,12 +27,18 @@ char *getGenerator() {
             CFStringRef CFGenerator = CFPreferencesCopyValue(CFSTR("generator"), bundleID, CFSTR("mobile"), kCFPreferencesAnyHost);
             if (CFStringGetLength(CFGenerator) == 18) {
                 CFStringGetCString(CFGenerator, generator, 19, kCFStringEncodingUTF8);
+                if (!vaildGenerator(generator)) {
+                    memset(generator, 0, 19);
+                    CFPreferencesSetValue(CFSTR("generator"), NULL, bundleID, CFSTR("mobile"), kCFPreferencesAnyHost);
+                }
+            } else {
+                CFPreferencesSetValue(CFSTR("generator"), NULL, bundleID, CFSTR("mobile"), kCFPreferencesAnyHost);
             }
             CFRelease(CFGenerator);
         }
         CFRelease(keyList);
     }
-    if (generator[0] == '\0' || !vaildGenerator(generator)) {
+    if (generator[0] == '\0') {
         strcpy(generator, "0x1111111111111111");
     }
     char *pointer = generator;

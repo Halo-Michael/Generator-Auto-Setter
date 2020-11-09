@@ -53,6 +53,7 @@ bool vaildGenerator(NSString *generator) {
         buffer = fgetc(fp);
     }
     pclose(fp);
+    [alertMessage deleteCharactersInRange:NSMakeRange([alertMessage length] - 1, 1)];
     [self presentViewController:alert(@"setgenerator", alertMessage, @"OK") animated:YES completion:nil];
 }
 

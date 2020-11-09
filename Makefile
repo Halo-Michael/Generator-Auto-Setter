@@ -1,13 +1,13 @@
 export TARGET = iphone:clang:13.0:9.0
 export ARCHS = arm64 arm64e
-export VERSION = 0.4.2
+export VERSION = 0.4.3
 export DEBUG = no
 CC = xcrun -sdk iphoneos clang -arch arm64 -arch arm64e -miphoneos-version-min=9.0
 LDID = ldid
 
 .PHONY: all clean
 
-all: clean rcsetgenerator postinst setgenerator preferenceloaderBundle
+all: clean rcsetgenerator postinst setgenerator GeneratorAutoSetterRootListController
 	mkdir com.michael.generatorautosetter_$(VERSION)_iphoneos-arm
 	mkdir com.michael.generatorautosetter_$(VERSION)_iphoneos-arm/DEBIAN
 	cp control com.michael.generatorautosetter_$(VERSION)_iphoneos-arm/DEBIAN
@@ -21,9 +21,10 @@ all: clean rcsetgenerator postinst setgenerator preferenceloaderBundle
 	mkdir com.michael.generatorautosetter_$(VERSION)_iphoneos-arm/Library
 	mkdir com.michael.generatorautosetter_$(VERSION)_iphoneos-arm/Library/PreferenceLoader
 	mkdir com.michael.generatorautosetter_$(VERSION)_iphoneos-arm/Library/PreferenceLoader/Preferences
-	cp preferenceloaderBundle/entry.plist com.michael.generatorautosetter_$(VERSION)_iphoneos-arm/Library/PreferenceLoader/Preferences/GeneratorAutoSetter.plist
+	cp entry.plist com.michael.generatorautosetter_$(VERSION)_iphoneos-arm/Library/PreferenceLoader/Preferences/GeneratorAutoSetter.plist
 	mkdir com.michael.generatorautosetter_$(VERSION)_iphoneos-arm/Library/PreferenceBundles
-	mv preferenceloaderBundle/.theos/obj/GeneratorAutoSetter.bundle com.michael.generatorautosetter_$(VERSION)_iphoneos-arm/Library/PreferenceBundles
+	cp -r Resources com.michael.generatorautosetter_$(VERSION)_iphoneos-arm/Library/PreferenceBundles/GeneratorAutoSetter.bundle
+	mv GeneratorAutoSetterRootListController com.michael.generatorautosetter_$(VERSION)_iphoneos-arm/Library/PreferenceBundles/GeneratorAutoSetter.bundle/GeneratorAutoSetter
 	dpkg -b com.michael.generatorautosetter_$(VERSION)_iphoneos-arm
 
 postinst: clean
@@ -41,9 +42,11 @@ setgenerator: clean
 	strip setgenerator
 	$(LDID) -Sentitlements.xml setgenerator
 
-preferenceloaderBundle: clean
-	cd preferenceloaderBundle && make
+GeneratorAutoSetterRootListController: clean
+	$(CC) -dynamiclib -fobjc-arc -install_name /Library/PreferenceBundles/GeneratorAutoSetter.bundle/GeneratorAutoSetter -I${THEOS}/vendor/include/ -framework Foundation -framework UIKit ${THEOS}/sdks/iPhoneOS13.0.sdk/System/Library/PrivateFrameworks/Preferences.framework/Preferences.tbd GeneratorAutoSetterRootListController.m -o GeneratorAutoSetterRootListController
+	strip -x GeneratorAutoSetterRootListController
+	$(LDID) -S GeneratorAutoSetterRootListController
 
 clean:
-	rm -rf com.michael.generatorautosetter_* preferenceloaderBundle/.theos
-	rm -f postinst rcsetgenerator setgenerator
+	rm -rf com.michael.generatorautosetter_*
+	rm -f postinst rcsetgenerator setgenerator GeneratorAutoSetterRootListController

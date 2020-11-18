@@ -69,6 +69,13 @@ int main(int argc, char **argv) {
                 uint64_t nonce;
                 if (dementia(&nonce, entangled_nonce, &entangled) == KERN_SUCCESS) {
                     printf("The currently generator is 0x%016" PRIX64 ".\n", nonce);
+                    if(entangled) {
+                        printf("entangled_nonce: ");
+                        for(size_t i = 0; i < MIN(sizeof(entangled_nonce), 32); ++i) {
+                            printf("%02" PRIX8, entangled_nonce[i]);
+                        }
+                        putchar('\n');
+                    }
                 }
                 dimentio_term();
             }

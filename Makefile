@@ -1,6 +1,6 @@
 export TARGET = iphone:clang:13.0:9.0
 export ARCHS = arm64 arm64e
-export VERSION = 0.4.3
+export VERSION = 0.5.0
 export DEBUG = no
 CC = xcrun -sdk iphoneos clang -arch arm64 -arch arm64e -miphoneos-version-min=9.0
 LDID = ldid
@@ -38,9 +38,11 @@ rcsetgenerator: clean
 	$(LDID) -Sentitlements.xml rcsetgenerator
 
 setgenerator: clean
-	$(CC) setgenerator.c -framework CoreFoundation -o setgenerator
+	$(CC) -Weverything dimentio/libdimentio.c -dynamiclib -install_name /usr/lib/libdimentio.dylib -framework IOKit -framework CoreFoundation -lcompression -O2 -o libdimentio.dylib
+	$(CC) setgenerator.c libdimentio.dylib -framework CoreFoundation -o setgenerator
+	rm libdimentio.dylib
 	strip setgenerator
-	$(LDID) -Sentitlements.xml setgenerator
+	$(LDID) -Sdimentio/tfp0.plist setgenerator
 
 GeneratorAutoSetterRootListController: clean
 	$(CC) -dynamiclib -fobjc-arc -install_name /Library/PreferenceBundles/GeneratorAutoSetter.bundle/GeneratorAutoSetter -I${THEOS}/vendor/include/ -framework Foundation -framework UIKit ${THEOS}/sdks/iPhoneOS13.0.sdk/System/Library/PrivateFrameworks/Preferences.framework/Preferences.tbd GeneratorAutoSetterRootListController.m -o GeneratorAutoSetterRootListController

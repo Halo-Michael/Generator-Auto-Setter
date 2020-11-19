@@ -95,7 +95,7 @@ int main(int argc, char **argv) {
     uint64_t nonce;
     if (dimentio_init(0, NULL, NULL) == KERN_SUCCESS) {
         char *generator = getGenerator();
-        sscanf(getGenerator(), "0x%016" PRIx64, &nonce);
+        sscanf(generator, "0x%016" PRIx64, &nonce);
         free(generator);
         if (dimentio(nonce, entangled_nonce, &entangled) == KERN_SUCCESS) {
             printf("Set nonce to 0x%016" PRIX64 "\n", nonce);

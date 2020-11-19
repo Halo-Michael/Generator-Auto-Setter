@@ -21,7 +21,7 @@ bool vaildGenerator(char *generator) {
 }
 
 char *getGenerator() {
-    static char generator[19] = {0};
+    char *generator = (char *)calloc(19, sizeof(char));
     CFArrayRef keyList = CFPreferencesCopyKeyList(bundleID, CFSTR("mobile"), kCFPreferencesAnyHost);
     if (keyList != NULL) {
         if (CFArrayContainsValue(keyList, CFRangeMake(0, CFArrayGetCount(keyList)), CFSTR("generator"))) {
@@ -29,7 +29,7 @@ char *getGenerator() {
             if (CFGetTypeID(CFGenerator) == CFStringGetTypeID() && CFStringGetLength(CFGenerator) == 18) {
                 CFStringGetCString(CFGenerator, generator, 19, kCFStringEncodingUTF8);
                 if (!vaildGenerator(generator)) {
-                    memset(generator, 0, 19);
+                    memset(generator, 0, 19 * sizeof(char));
                     CFPreferencesSetValue(CFSTR("generator"), NULL, bundleID, CFSTR("mobile"), kCFPreferencesAnyHost);
                 }
             } else {
@@ -42,8 +42,7 @@ char *getGenerator() {
     if (generator[0] == '\0') {
         strcpy(generator, "0x1111111111111111");
     }
-    char *pointer = generator;
-    return pointer;
+    return generator;
 }
 
 int main(int argc, char **argv) {
@@ -65,7 +64,7 @@ int main(int argc, char **argv) {
         if (strcmp(argv[1], "-s") == 0) {
             if (dimentio_init(0, NULL, NULL) == KERN_SUCCESS) {
                 uint8_t entangled_nonce[CC_SHA384_DIGEST_LENGTH];
-                bool entangled = false;
+                bool entangled;
                 uint64_t nonce;
                 if (dementia(&nonce, entangled_nonce, &entangled) == KERN_SUCCESS) {
                     printf("The currently generator is 0x%016" PRIX64 ".\n", nonce);
@@ -79,7 +78,9 @@ int main(int argc, char **argv) {
                 }
                 dimentio_term();
             }
-            printf("The currently set generator is %s.\n", getGenerator());
+            char *generator = getGenerator();
+            printf("The currently set generator is %s.\n", generator);
+            free(generator);
             return 0;
         } else if (!vaildGenerator(argv[1])) {
             usage();
@@ -90,10 +91,12 @@ int main(int argc, char **argv) {
     }
 
     uint8_t entangled_nonce[CC_SHA384_DIGEST_LENGTH];
-    bool entangled = false;
+    bool entangled;
     uint64_t nonce;
     if (dimentio_init(0, NULL, NULL) == KERN_SUCCESS) {
+        char *generator = getGenerator();
         sscanf(getGenerator(), "0x%016" PRIx64, &nonce);
+        free(generator);
         if (dimentio(nonce, entangled_nonce, &entangled) == KERN_SUCCESS) {
             printf("Set nonce to 0x%016" PRIX64 "\n", nonce);
             if(entangled) {

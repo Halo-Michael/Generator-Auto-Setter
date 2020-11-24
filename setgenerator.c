@@ -66,7 +66,7 @@ int main(int argc, char **argv) {
                 uint8_t entangled_nonce[CC_SHA384_DIGEST_LENGTH];
                 bool entangled;
                 uint64_t nonce;
-                if (dementia(&nonce, entangled_nonce, &entangled) == KERN_SUCCESS) {
+                if (dimentio(&nonce, false, entangled_nonce, &entangled) == KERN_SUCCESS) {
                     printf("The currently generator is 0x%016" PRIX64 ".\n", nonce);
                     if(entangled) {
                         printf("entangled_nonce: ");
@@ -97,7 +97,7 @@ int main(int argc, char **argv) {
         char *generator = getGenerator();
         sscanf(generator, "0x%016" PRIx64, &nonce);
         free(generator);
-        if (dimentio(nonce, entangled_nonce, &entangled) == KERN_SUCCESS) {
+        if (dimentio(&nonce, true, entangled_nonce, &entangled) == KERN_SUCCESS) {
             printf("Set nonce to 0x%016" PRIX64 "\n", nonce);
             if(entangled) {
                 printf("entangled_nonce: ");

@@ -1,11 +1,11 @@
 Package: com.michael.generatorautosetter
-Version: 0.5.5
+Version: 0.5.6
 Section: Tweaks
 Name: Generator Auto Setter
 Author: halo_michael <yc992147156@me.com>
 Sponsor: halo_michael <yc992147156@me.com>
 Maintainer: halo_michael <yc992147156@me.com>
-Depends: firmware (>= 12.0), com.michael.libdementia (>= 0.1.4), preferenceloader
+Depends: firmware (>= 12.0), com.michael.libdementia (>= 0.2.3), preferenceloader
 Architecture: iphoneos-arm
 Description: Auto set your generator when jailbreaking!
 Depiction: https://halo-michael.github.io/repo/info/generatorautosetter

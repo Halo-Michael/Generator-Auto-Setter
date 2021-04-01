@@ -1,8 +1,9 @@
 export TARGET = iphone:clang:13.0:9.0
 export ARCHS = arm64 arm64e
-export VERSION = 0.5.6
+export VERSION = 0.5.7
 export DEBUG = no
-CC = xcrun -sdk iphoneos clang -arch arm64 -arch arm64e -miphoneos-version-min=9.0
+64CC = xcrun -sdk iphoneos clang -arch arm64 -miphoneos-version-min=9.0
+64eCC = xcrun -sdk iphoneos clang -arch arm64 -arch arm64e -miphoneos-version-min=9.0
 LDID = ldid
 
 .PHONY: all clean
@@ -28,22 +29,22 @@ all: clean rcsetgenerator postinst setgenerator GeneratorAutoSetterRootListContr
 	dpkg -b com.michael.generatorautosetter_$(VERSION)_iphoneos-arm
 
 postinst: clean
-	$(CC) postinst.c -o postinst
+	$(64CC) postinst.c -o postinst
 	strip postinst
 	$(LDID) -Sentitlements.xml postinst
 
 rcsetgenerator: clean
-	$(CC) rcsetgenerator.c -framework CoreFoundation -o rcsetgenerator
+	$(64CC) rcsetgenerator.c -framework CoreFoundation -o rcsetgenerator
 	strip rcsetgenerator
 	$(LDID) -Sentitlements.xml rcsetgenerator
 
 setgenerator: clean
-	$(CC) setgenerator.c libdementia.tbd -framework CoreFoundation -o setgenerator
+	$(64CC) setgenerator.c libdementia.tbd -framework CoreFoundation -o setgenerator
 	strip setgenerator
 	$(LDID) -Stfp0.xml setgenerator
 
 GeneratorAutoSetterRootListController: clean
-	$(CC) -dynamiclib -fobjc-arc -install_name /Library/PreferenceBundles/GeneratorAutoSetter.bundle/GeneratorAutoSetter -I${THEOS}/vendor/include/ -framework Foundation -framework UIKit ${THEOS}/sdks/iPhoneOS13.0.sdk/System/Library/PrivateFrameworks/Preferences.framework/Preferences.tbd GeneratorAutoSetterRootListController.m -o GeneratorAutoSetterRootListController
+	$(64eCC) -dynamiclib -fobjc-arc -install_name /Library/PreferenceBundles/GeneratorAutoSetter.bundle/GeneratorAutoSetter -I${THEOS}/vendor/include/ -framework Foundation -framework UIKit ${THEOS}/sdks/iPhoneOS13.0.sdk/System/Library/PrivateFrameworks/Preferences.framework/Preferences.tbd GeneratorAutoSetterRootListController.m -o GeneratorAutoSetterRootListController
 	strip -x GeneratorAutoSetterRootListController
 	$(LDID) -S GeneratorAutoSetterRootListController
 

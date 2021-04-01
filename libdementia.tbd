@@ -1,11 +1,11 @@
 ---
-archs:           [ arm64, arm64e ]
+archs:           [ arm64 ]
 platform:        ios
 install-name:    /usr/lib/libdementia.dylib
 current-version: 0.0
 compatibility-version: 0.0
 exports:         
-  - archs:           [ arm64, arm64e ]
+  - archs:           [ arm64 ]
     symbols:         [ 'radr://5614542', _dimentio, _dimentio_init, _dimentio_term, 
                        _print_nonce ]
 ...

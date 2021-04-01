@@ -1,6 +1,8 @@
 #include <CoreFoundation/CoreFoundation.h>
 #include "libdementia.h"
 
+#define MIN(a, b) ((a) < (b) ? (a) : (b))
+
 #define bundleID CFSTR("com.michael.generator")
 
 void usage() {
@@ -66,7 +68,7 @@ int main(int argc, char **argv) {
                 uint8_t *entangled_nonce = NULL;
                 bool entangled, printNonce, useSHA1;
                 uint64_t nonce;
-                print_nonce(&printNonce, &useSHA1);
+                printNonce = print_nonce(&useSHA1);
                 if (printNonce) {
                     if (useSHA1) {
                         entangled_nonce = (uint8_t*)calloc(CC_SHA1_DIGEST_LENGTH, sizeof(uint8_t));
@@ -122,7 +124,7 @@ int main(int argc, char **argv) {
         free(generator);
         uint8_t *entangled_nonce = NULL;
         bool entangled, printNonce, useSHA1;
-        print_nonce(&printNonce, &useSHA1);
+        printNonce = print_nonce(&useSHA1);
         if (printNonce) {
             if (useSHA1) {
                 entangled_nonce = (uint8_t*)calloc(CC_SHA1_DIGEST_LENGTH, sizeof(uint8_t));

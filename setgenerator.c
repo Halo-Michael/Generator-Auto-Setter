@@ -78,7 +78,7 @@ int main(int argc, char **argv) {
                         } else {
                             printf("apnonce: ");
                         }
-                        for (i = 0; entangled_nonce[i] != 0; ++i) {
+                        for (i = 0; entangled_nonce[i] != 0 && i < 32; ++i) {
                             printf("%02" PRIX8, entangled_nonce[i]);
                         }
                         putchar('\n');
@@ -122,12 +122,12 @@ int main(int argc, char **argv) {
         if (dimentio(&nonce, true, entangled_nonce, &entangled) == KERN_SUCCESS) {
             printf("Set generator to 0x%016" PRIX64 "\n", nonce);
             if (entangled_nonce[0] != 0) {
-                if(entangled) {
+                if (entangled) {
                     printf("entangled_apnonce: ");
                 } else {
                     printf("apnonce: ");
                 }
-                for (i = 0; entangled_nonce[i] != 0; ++i) {
+                for (i = 0; entangled_nonce[i] != 0 && i < 32; ++i) {
                     printf("%02" PRIX8, entangled_nonce[i]);
                 }
                 putchar('\n');

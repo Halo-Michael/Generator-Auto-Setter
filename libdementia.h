@@ -27,8 +27,5 @@ kern_return_t
 dimentio_init(kaddr_t, kread_func_t, kwrite_func_t);
 
 kern_return_t
-dimentio(uint64_t *, bool, uint8_t *, bool *);
-
-bool
-print_nonce(bool *useSHA1);
+dimentio(uint64_t *, bool, uint8_t[CC_SHA384_DIGEST_LENGTH], bool *);
 #endif

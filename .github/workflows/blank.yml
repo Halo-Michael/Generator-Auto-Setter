@@ -26,6 +26,7 @@ jobs:
       - name: Run a multi-line script
         run: |
           sudo xcode-select -s /Applications/Xcode_11.7.app
+          brew update
           brew install ldid dpkg xz
           export THEOS=/opt/theos
           sudo git clone --recursive https://github.com/Halo-Michael/theos.git $THEOS

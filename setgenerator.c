@@ -65,32 +65,25 @@ int main(int argc, char **argv) {
     if (argc == 2) {
         if (strcmp(argv[1], "-s") == 0) {
             if (dimentio_init(0, NULL, NULL) == KERN_SUCCESS) {
-                uint8_t *entangled_nonce = NULL;
-                bool entangled, printNonce, useSHA1;
+                uint8_t entangled_nonce[CC_SHA384_DIGEST_LENGTH];
                 uint64_t nonce;
-                printNonce = print_nonce(&useSHA1);
-                if (printNonce) {
-                    if (useSHA1) {
-                        entangled_nonce = (uint8_t*)calloc(CC_SHA1_DIGEST_LENGTH, sizeof(uint8_t));
-                    } else {
-                        entangled_nonce = (uint8_t*)calloc(CC_SHA384_DIGEST_LENGTH, sizeof(uint8_t));
-                    }
-                }
+                bool entangled;
+                size_t i;
+                memset(entangled_nonce, 0, CC_SHA384_DIGEST_LENGTH);
                 if (dimentio(&nonce, false, entangled_nonce, &entangled) == KERN_SUCCESS) {
                     printf("The currently generator is 0x%016" PRIX64 ".\n", nonce);
-                    if (printNonce) {
-                        if(entangled) {
+                    if (entangled_nonce[0] != 0) {
+                        if (entangled) {
                             printf("entangled_apnonce: ");
                         } else {
                             printf("apnonce: ");
                         }
-                        for(size_t i = 0; i < MIN(useSHA1 ? CC_SHA1_DIGEST_LENGTH : CC_SHA384_DIGEST_LENGTH, 32); ++i) {
+                        for (i = 0; entangled_nonce[i] != 0; ++i) {
                             printf("%02" PRIX8, entangled_nonce[i]);
                         }
                         putchar('\n');
                     }
                 }
-                free(entangled_nonce);
                 dimentio_term();
             }
             CFArrayRef keyList = CFPreferencesCopyKeyList(bundleID, CFSTR("mobile"), kCFPreferencesAnyHost);
@@ -122,31 +115,24 @@ int main(int argc, char **argv) {
         char *generator = getGenerator();
         sscanf(generator, "0x%016" PRIx64, &nonce);
         free(generator);
-        uint8_t *entangled_nonce = NULL;
-        bool entangled, printNonce, useSHA1;
-        printNonce = print_nonce(&useSHA1);
-        if (printNonce) {
-            if (useSHA1) {
-                entangled_nonce = (uint8_t*)calloc(CC_SHA1_DIGEST_LENGTH, sizeof(uint8_t));
-            } else {
-                entangled_nonce = (uint8_t*)calloc(CC_SHA384_DIGEST_LENGTH, sizeof(uint8_t));
-            }
-        }
+        uint8_t entangled_nonce[CC_SHA384_DIGEST_LENGTH];
+        bool entangled;
+        size_t i;
+        memset(entangled_nonce, 0, CC_SHA384_DIGEST_LENGTH);
         if (dimentio(&nonce, true, entangled_nonce, &entangled) == KERN_SUCCESS) {
             printf("Set generator to 0x%016" PRIX64 "\n", nonce);
-            if (printNonce) {
+            if (entangled_nonce[0] != 0) {
                 if(entangled) {
                     printf("entangled_apnonce: ");
                 } else {
                     printf("apnonce: ");
                 }
-                for(size_t i = 0; i < MIN(useSHA1 ? CC_SHA1_DIGEST_LENGTH : CC_SHA384_DIGEST_LENGTH, 32); ++i) {
+                for (i = 0; entangled_nonce[i] != 0; ++i) {
                     printf("%02" PRIX8, entangled_nonce[i]);
                 }
                 putchar('\n');
             }
         }
-        free(entangled_nonce);
         dimentio_term();
     }
     return 0;

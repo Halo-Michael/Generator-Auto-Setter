@@ -69,7 +69,6 @@ int main(int argc, char **argv) {
                 uint64_t nonce;
                 bool entangled;
                 size_t i;
-                memset(entangled_nonce, 0, CC_SHA384_DIGEST_LENGTH);
                 if (dimentio(&nonce, false, entangled_nonce, &entangled) == KERN_SUCCESS) {
                     printf("The currently generator is 0x%016" PRIX64 ".\n", nonce);
                     if (entangled_nonce[0] != 0) {
@@ -118,7 +117,6 @@ int main(int argc, char **argv) {
         uint8_t entangled_nonce[CC_SHA384_DIGEST_LENGTH];
         bool entangled;
         size_t i;
-        memset(entangled_nonce, 0, CC_SHA384_DIGEST_LENGTH);
         if (dimentio(&nonce, true, entangled_nonce, &entangled) == KERN_SUCCESS) {
             printf("Set generator to 0x%016" PRIX64 "\n", nonce);
             if (entangled_nonce[0] != 0) {

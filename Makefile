@@ -1,4 +1,4 @@
-export VERSION = 0.5.9
+VERSION = 0.5.9
 64CC = xcrun -sdk iphoneos clang -arch arm64 -miphoneos-version-min=9.0
 64eCC = xcrun -sdk iphoneos clang -arch arm64 -arch arm64e -miphoneos-version-min=9.0
 SED = gsed

@@ -1,6 +1,7 @@
-VERSION = 0.5.8
+export VERSION = 0.5.9
 64CC = xcrun -sdk iphoneos clang -arch arm64 -miphoneos-version-min=9.0
 64eCC = xcrun -sdk iphoneos clang -arch arm64 -arch arm64e -miphoneos-version-min=9.0
+SED = gsed
 LDID = ldid
 
 .PHONY: all clean
@@ -9,6 +10,7 @@ all: clean rcsetgenerator postinst setgenerator GeneratorAutoSetterRootListContr
 	mkdir com.michael.generatorautosetter_$(VERSION)_iphoneos-arm
 	mkdir com.michael.generatorautosetter_$(VERSION)_iphoneos-arm/DEBIAN
 	cp control com.michael.generatorautosetter_$(VERSION)_iphoneos-arm/DEBIAN
+	$(SED) -i 's/^Version:\x24/Version: $(VERSION)/g' com.michael.generatorautosetter_$(VERSION)_iphoneos-arm/DEBIAN/control
 	mv postinst com.michael.generatorautosetter_$(VERSION)_iphoneos-arm/DEBIAN
 	mkdir com.michael.generatorautosetter_$(VERSION)_iphoneos-arm/usr
 	mkdir com.michael.generatorautosetter_$(VERSION)_iphoneos-arm/usr/bin

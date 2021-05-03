@@ -65,7 +65,7 @@ int main(int argc, char **argv) {
     if (argc == 2) {
         if (strcmp(argv[1], "-s") == 0) {
             if (dimentio_init(0, NULL, NULL) == KERN_SUCCESS) {
-                uint8_t entangled_nonce[CC_SHA384_DIGEST_LENGTH];
+                uint8_t entangled_nonce[CC_SHA384_DIGEST_LENGTH] = {0};
                 uint64_t nonce;
                 bool entangled;
                 size_t i;
@@ -114,7 +114,7 @@ int main(int argc, char **argv) {
         char *generator = getGenerator();
         sscanf(generator, "0x%016" PRIx64, &nonce);
         free(generator);
-        uint8_t entangled_nonce[CC_SHA384_DIGEST_LENGTH];
+        uint8_t entangled_nonce[CC_SHA384_DIGEST_LENGTH] = {0};
         bool entangled;
         size_t i;
         if (dimentio(&nonce, true, entangled_nonce, &entangled) == KERN_SUCCESS) {

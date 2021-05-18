@@ -3,8 +3,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-int main()
-{
+int main() {
     if (getuid() != 0) {
         printf("Run this as root!\n");
         return 1;

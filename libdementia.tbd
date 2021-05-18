@@ -6,5 +6,6 @@ current-version: 0.0
 compatibility-version: 0.0
 exports:         
   - archs:           [ arm64 ]
-    symbols:         [ 'radr://5614542', _dimentio, _dimentio_init, _dimentio_term ]
+    symbols:         [ 'radr://5614542', _dimentio, _dimentio_init, _dimentio_preinit, 
+                       _dimentio_term ]
 ...

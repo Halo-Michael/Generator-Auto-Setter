@@ -1,6 +1,7 @@
-VERSION = 0.5.9
-64CC = xcrun -sdk iphoneos clang -arch arm64 -miphoneos-version-min=9.0
-64eCC = xcrun -sdk iphoneos clang -arch arm64 -arch arm64e -miphoneos-version-min=9.0
+VERSION = 0.5.10
+THEOS=/opt/theos
+64CC = xcrun -sdk $(THEOS)/sdks/iPhoneOS13.0.sdk clang -arch arm64 -miphoneos-version-min=9.0 -O2
+64eCC = $(64CC) -arch arm64e
 SED = gsed
 LDID = ldid
 
@@ -33,12 +34,12 @@ postinst: clean
 	$(LDID) -Sentitlements.xml postinst
 
 rcsetgenerator: clean
-	$(64CC) rcsetgenerator.c -framework CoreFoundation -o rcsetgenerator
+	$(64CC) -objc-arc rcsetgenerator.m -framework Foundation -o rcsetgenerator
 	strip rcsetgenerator
 	$(LDID) -Sentitlements.xml rcsetgenerator
 
 setgenerator: clean
-	$(64CC) setgenerator.c libdementia.tbd -framework CoreFoundation -o setgenerator
+	$(64CC) -objc-arc setgenerator.m libdementia.tbd -framework Foundation -o setgenerator
 	strip setgenerator
 	$(LDID) -Stfp0.xml setgenerator
 
